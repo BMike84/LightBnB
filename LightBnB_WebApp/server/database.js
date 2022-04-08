@@ -1,6 +1,7 @@
 const properties = require('./json/properties.json');
 const users = require('./json/users.json');
 const { Pool } = require('pg');
+const res = require('express/lib/response');
 
 const pool = new Pool({
   user: 'vagrant',
@@ -9,8 +10,6 @@ const pool = new Pool({
   database: 'lightbnb'
 });
 
-// pool.query(`SELECT title FROM properties LIMIT 10;`).then(response => {console.log(response)})
-
 /// Users
 
 /**
@@ -18,17 +17,14 @@ const pool = new Pool({
  * @param {String} email The email of the user.
  * @return {Promise<{}>} A promise to the user.
  */
+
 const getUserWithEmail = function(email) {
-  let user;
-  for (const userId in users) {
-    user = users[userId];
-    if (user.email.toLowerCase() === email.toLowerCase()) {
-      break;
-    } else {
-      user = null;
-    }
-  }
-  return Promise.resolve(user);
+  return pool.query(`SELECT * FROM users where email = $1`, [email])
+  .then(res => {
+    if (res.rows.length === 0) return null;
+    return res.rows[0]; 
+  })
+  .catch(err => console.log(err))
 }
 exports.getUserWithEmail = getUserWithEmail;
 
@@ -38,7 +34,12 @@ exports.getUserWithEmail = getUserWithEmail;
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithId = function(id) {
-  return Promise.resolve(users[id]);
+  return pool.query(`SELECT * FROM users where id = $1`, [id])
+  .then(res => {
+    if (res.rows.length === 0) return null;
+    return res.rows[0]; 
+  })
+  .catch(err => console.log(err))
 }
 exports.getUserWithId = getUserWithId;
 
@@ -49,10 +50,17 @@ exports.getUserWithId = getUserWithId;
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser =  function(user) {
-  const userId = Object.keys(users).length + 1;
-  user.id = userId;
-  users[userId] = user;
-  return Promise.resolve(user);
+  const values = [user.name, user.email, user.password];
+  return pool.query(`
+    INSERT INTO users (name, email, password)
+    VALUES($1, $2, $3)
+    RETURNING *;`, values)
+    .then (res => {
+      if (res.rows.length === 0) return null;
+      console.log(res.rows[0])
+      return res.rows[0];
+    })
+    .catch(err => console.log(err))
 }
 exports.addUser = addUser;
 
@@ -79,20 +87,13 @@ exports.getAllReservations = getAllReservations;
 const getAllProperties = function(options, limit = 10) {
   return pool
     .query(`SELECT * FROM properties LIMIT $1`, [limit])
-    .then((result) => {
-      console.log(result.rows);
-      return result.rows;
+    .then(res => {
+      // console.log(res.rows);
+      return res.rows;
     })
-    .catch((err) => {
+    .catch(err => {
       console.log(err.message);
     });
-
-  // remove after this code
-  // const limitedProperties = {};
-  // for (let i = 1; i <= limit; i++) {
-  //   limitedProperties[i] = properties[i];
-  // }
-  // return Promise.resolve(limitedProperties);
 }
 exports.getAllProperties = getAllProperties;
 
