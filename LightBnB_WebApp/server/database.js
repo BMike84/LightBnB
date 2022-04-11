@@ -59,7 +59,6 @@ const addUser =  function(user) {
     RETURNING *;`, values)
     .then (res => {
       if (res.rows.length === 0) return null;
-      console.log(res.rows[0])
       return res.rows[0];
     })
     .catch(err => console.log('Add User Error Message: ',err))
