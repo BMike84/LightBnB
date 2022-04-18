@@ -110,11 +110,13 @@ const getAllProperties = function(options, limit = 10) {
     JOIN property_reviews ON properties.id = property_id
     `;
     
+    //This query is search for a specific city and makes it case in-sensitive
     if (options.city) {
       queryParams.push(`%${options.city}%`);
       queryString += `WHERE LOWER(city) LIKE LOWER($${queryParams.length}) `;
     }
 
+    //When searching for places you need to have access to the owener id
     if (options.owner_id) {
       queryParams.push(options.owner_id);
       if (queryParams.length === 1) {
@@ -124,6 +126,7 @@ const getAllProperties = function(options, limit = 10) {
       }
     }
 
+    // this is a query for searching for price range. Its * 100 because the database is in cents
     if (options.minimum_price_per_night && options.maximum_price_per_night) {
       queryParams.push(options.minimum_price_per_night * 100, options.maximum_price_per_night * 100);
       if (queryParams.length === 2) {
@@ -133,6 +136,7 @@ const getAllProperties = function(options, limit = 10) {
       }
     }
 
+    // Searches for minimum ratings
     if (options.minimum_rating) {
       queryParams.push(`${options.minimum_rating}`);
       if (queryParams.length === 1) {
