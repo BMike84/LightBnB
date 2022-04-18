@@ -11,6 +11,7 @@
 * Install dependencies using the npm install command
 * Npm run local
 * http://localhost:3000/ in browser
+* To check for a already created user tristanjacobs@gmail.com and password is password
 
 ## Dependencies
 * Express
