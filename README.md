@@ -1,8 +1,9 @@
 # LightBnb 
-Project for Lighthouse Labs for introducing databases
-Utilizes PostgreSQL
-Purpose is to run queries to perform specific searches in database
-Block users from typing in SQL injection
+* Project for Lighthouse Labs for introducing databases
+* Utilizes PostgreSQL
+* Purpose is to run queries to perform specific searches in database
+* Block users from typing in SQL injection
+* It uses the database from 02_seeds.sql, 01_seeds was just for us to get use inserting data
 
 ## Getting Started
 * Fork this repository, then clone your fork of this repository.
