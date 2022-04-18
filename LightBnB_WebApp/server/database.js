@@ -10,7 +10,7 @@ const pool = new Pool({
   database: 'lightbnb'
 });
 
-/// Users
+// Users
 
 /**
  * Get a single user from the database given their email.
@@ -90,7 +90,6 @@ const getAllReservations = function(guest_id, limit = 10) {
     .catch(err => {
       console.log('Reservation Query Error:', err);
     })
-  // return getAllProperties(null, 2);
 }
 exports.getAllReservations = getAllReservations;
 
@@ -110,10 +109,10 @@ const getAllProperties = function(options, limit = 10) {
     FROM properties
     JOIN property_reviews ON properties.id = property_id
     `;
-  
+    
     if (options.city) {
       queryParams.push(`%${options.city}%`);
-      queryString += `WHERE city LIKE $${queryParams.length} `;
+      queryString += `WHERE LOWER(city) LIKE LOWER($${queryParams.length}) `;
     }
 
     if (options.owner_id) {
@@ -143,13 +142,6 @@ const getAllProperties = function(options, limit = 10) {
       }
       
     }
-    
-    // try getting have to work
-    // if (options.minimum_rating) {
-    //   queryParams.push(Number(options.minimum_rating));
-    //   queryString += `HAVING AVG(rating) >= $${queryParams.length} `;
-    // }
-
   
     queryParams.push(limit);
     queryString += `
@@ -157,7 +149,7 @@ const getAllProperties = function(options, limit = 10) {
     ORDER BY cost_per_night
     LIMIT $${queryParams.length};
     `;
-  
+    
     console.log(queryString, queryParams);
   
     return pool.query(queryString, queryParams).then((res) => res.rows);
